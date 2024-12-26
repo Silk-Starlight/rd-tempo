@@ -7,7 +7,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import {
   Form,
@@ -27,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useForm } from "react-hook-form";
 
 interface TripFormDialogProps {
   open?: boolean;
@@ -59,6 +59,10 @@ const TripFormDialog = ({
   },
   mode = "create",
 }: TripFormDialogProps) => {
+  const form = useForm<TripFormData>({
+    defaultValues: initialData,
+  });
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[600px] bg-white">
@@ -73,78 +77,79 @@ const TripFormDialog = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Form>
-          <div className="grid gap-4 py-4">
-            <FormField
-              name="destination"
-              defaultValue={initialData.destination}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Destination</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter destination" {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Enter the main destination of your trip
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="dateRange"
-              defaultValue={initialData.dateRange}
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Date Range</FormLabel>
-                  <DatePickerWithRange {...field} />
-                  <FormDescription>
-                    Select the start and end dates of your trip
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              name="status"
-              defaultValue={initialData.status}
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Trip Status</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <div className="grid gap-4 py-4">
+              <FormField
+                control={form.control}
+                name="destination"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Destination</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select trip status" />
-                      </SelectTrigger>
+                      <Input placeholder="Enter destination" {...field} />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="planned">Planned</SelectItem>
-                      <SelectItem value="in-progress">In Progress</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormDescription>Current status of your trip</FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                    <FormDescription>
+                      Enter the main destination of your trip
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-          <DialogFooter>
-            <Button
-              type="submit"
-              onClick={(e) => {
-                e.preventDefault();
-                onSubmit(initialData);
-              }}
-            >
-              {mode === "create" ? "Create Trip" : "Save Changes"}
-            </Button>
-          </DialogFooter>
+              <FormField
+                control={form.control}
+                name="dateRange"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Date Range</FormLabel>
+                    <DatePickerWithRange
+                      date={field.value}
+                      onDateChange={field.onChange}
+                    />
+                    <FormDescription>
+                      Select the start and end dates of your trip
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Trip Status</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select trip status" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="planned">Planned</SelectItem>
+                        <SelectItem value="in-progress">In Progress</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Current status of your trip
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="submit">
+                {mode === "create" ? "Create Trip" : "Save Changes"}
+              </Button>
+            </DialogFooter>
+          </form>
         </Form>
       </DialogContent>
     </Dialog>

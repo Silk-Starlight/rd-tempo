@@ -1,0 +1,11 @@
+import DashboardPage from '@/pages/dashboard';
+
+const Storyboard = () => {
+  return (
+    <div className="w-full h-full bg-background">
+      <DashboardPage />
+    </div>
+  );
+};
+
+export default Storyboard;
